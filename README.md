@@ -149,49 +149,18 @@ ftp.list(remoteCWD, (err, res) => {
 });
 ```
 
-#### Ftp.get(remotePath, callback)
+#### Ftp.get(remotePath)
 
-Gives back a paused socket with the file contents ready to be streamed, or calls
-the callback with an error if not successful.
+Gives back a File (extension of blob) of the file you requested
 
 ```javascript
 var str = ""; // Will store the contents of the file
-ftp.get("remote/path/file.txt", (err, socket) => {
-  if (err) {
-    return;
-  }
-
-  socket.on("data", d => {
-    str += d.toString();
-  });
-
-  socket.on("close", err => {
-    if (hadErr) {
-      console.error("There was an error retrieving the file.");
-    }
-  });
-
-  socket.resume();
-});
-```
-
-#### Ftp.get(remotePath, localPath, callback)
-
-Stores the remote file directly in the given local path.
-
-```javascript
-ftp.get("remote/file.txt", "local/file.txt", err => {
-  if (hadErr) {
-    return console.error("There was an error retrieving the file.");
-  }
-  console.log("File copied successfully!");
-});
+str = await (await ftp.get("remote/path/file.txt")).text();
 ```
 
 #### Ftp.put(source, remotePath, callback)
 
-Uploads a file to `filePath`. It accepts a string with the local path for the
-file, a `Buffer`, or a Readable stream as a `source` parameter.
+Uploads a file to `filePath`. It accepts a `Uint8array`, or a Blob.
 
 ```javascript
 ftp.put(buffer, "path/to/remote/file.txt", err => {
