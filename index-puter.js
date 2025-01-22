@@ -1,0 +1,1 @@
+window.jsftp = require("./lib/jsftp-puter-promises")

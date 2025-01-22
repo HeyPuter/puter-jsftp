@@ -1,4 +1,4 @@
-# jsftp
+# jsftp for puter
 
 [![travis][travis-image]][travis-url] [![npm][npm-image]][npm-url]
 [![downloads][downloads-image]][downloads-url]
@@ -42,26 +42,16 @@ Raw (or native) commands are accessible in the form `Ftp.raw(command, params, ca
 Thus, a command like `QUIT` will be called like this:
 
 ```javascript
-Ftp.raw("quit", (err, data) => {
-  if (err) {
-    return console.error(err);
-  }
-
-  console.log("Bye!");
-});
+const data = await Ftp.raw("quit", "/new_dir");
 ```
 
 and a command like `MKD` (make directory), which accepts parameters, looks like
 this:
 
 ```javascript
-Ftp.raw("mkd", "/new_dir", (err, data) => {
-  if (err) {
-    return console.error(err);
-  }
-  console.log(data.text); // Show the FTP response text to the user
-  console.log(data.code); // Show the FTP response code to the user
-});
+const data = await Ftp.raw("mkd", "/new_dir");
+console.log(data.text); 
+console.log(data.code);
 ```
 
 ## API and examples
@@ -76,9 +66,6 @@ Ftp.raw("mkd", "/new_dir", (err, data) => {
   port: 3333, // Port number for the current FTP server (defaults to 21).
   user: 'user', // Username
   pass: 'pass', // Password
-  createSocket: ({port, host}, firstAction) => {
-    return net.createConnection({port, host}, firstAction);
-  }, // function that creates the socket, default uses net.createConnection
 }
 ```
 
@@ -90,23 +77,7 @@ const ftp = new Ffp({
   host: 'localhost',
   port: 3333,
   user: 'user',
-  pass: 'password',
-  createSocket: ({port, host}, firstAction) => {
-    return SocksClient.createConnection({
-      proxy: {
-        ipaddress: '159.203.75.200'
-        port: 1080,
-        type: 5
-      },
-
-      command: 'connect',
-
-      destination: {
-        host,
-        port
-      }
-    })
-  }
+  pass: 'password'
 })
 ```
 
@@ -135,26 +106,24 @@ Contains the system identification string for the remote FTP server.
 
 ### Methods
 
-#### Ftp.raw(command, [...args], callback)
+#### await Ftp.raw(command, [...args])
 
 With the `raw` method you can send any FTP command to the server. The method
-accepts a callback with the signature `err, data`, in which `err` is the error
 response coming from the server (usually a 4xx or 5xx error code) and the data
-is an object that contains two properties: `code` and `text`. `code` is an
+It resolves with a promise that contains two properties: `code` and `text`. `code` is an
 integer indicating the response code of the response and `text` is the response
 string itself.
 
-#### Ftp.auth(username, password, callback)
+#### Ftp.auth(username, password)
 
 Authenticates the user with the given username and password. If null or empty
-values are passed for those, `auth` will use anonymous credentials. `callback`
-will be called with the response text in case of successful login or with an
+values are passed for those, `auth` will use anonymous credentials. Promise will be resolved with the response text in case of successful login or with an
 error as a first parameter, in normal Node fashion.
 
 #### Ftp.ls(filePath, callback)
 
 Lists information about files or directories and yields an array of file objects
-with parsed file properties to the `callback`. You should use this function
+with parsed file properties to the You should use this function
 instead of `stat` or `list` in case you need to do something with the individual
 file properties.
 
