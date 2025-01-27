@@ -17,7 +17,7 @@
     console.log('Listing files...');
     const fileList = await ftp.list('.');
     console.log('Files:', fileList);
-
+    await ftp.put(new TextEncoder().encode("Testing puter-ftp"), "/hello.txt");
   } catch (error) {
     console.error('An error occurred:', error);
   } finally {
